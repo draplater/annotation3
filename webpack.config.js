@@ -74,10 +74,76 @@ module.exports = {
           ]
         })
       },
+      // scoped less
+      {
+	test: /\.scoped\.less$/,
+        use: [
+          {
+            loader: 'style-loader'
+          },
+          {
+            loader: 'css-loader',
+            query: {
+              modules: true,
+              sourceMap: !isProduction,
+              importLoaders: 1,
+              localIdentName: '[local]__[hash:base64:5]'
+            }
+          },
+          {
+            loader: 'postcss-loader',
+            options: {
+              ident: 'postcss',
+              plugins: [
+                require('postcss-import')({ addDependencyTo: Webpack }),
+                require('postcss-url')(),
+                require('postcss-cssnext')(),
+                require('postcss-reporter')(),
+                require('postcss-browser-reporter')({ disabled: isProduction }),
+              ]
+            }
+          },
+          {
+            loader: 'less-loader'
+          }
+        ]
+      },
+      // global less
+      {
+	exclude: /\.scoped\.less$/,
+        test: /\.less$/,
+        use: [
+          {
+            loader: 'style-loader'
+          },
+          {
+            loader: 'css-loader'
+          },
+          {
+            loader: 'less-loader'
+          }
+        ]
+      },
       // static assets
       { test: /\.html$/, use: 'html-loader' },
       { test: /\.png$/, use: 'url-loader?limit=10000' },
       { test: /\.jpg$/, use: 'file-loader' },
+      // default
+      {
+        exclude: [
+          /\.html$/,
+          /\.(ts|tsx)$/,
+          /\.(js|jsx)$/,
+          /\.css$/,
+          /\.less$/,
+          /\.jpe?g$/,
+          /\.png$/,
+        ],
+        loader: require.resolve('file-loader'),
+        options: {
+          name: 'static/media/[name].[hash:8].[ext]',
+        },
+      }
     ],
   },
   plugins: [
