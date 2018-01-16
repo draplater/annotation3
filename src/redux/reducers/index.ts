@@ -1,11 +1,11 @@
 import { combineReducers, Reducer } from "redux";
-import VersionInfo from "./VersionInfo";
+import GlobalInfo from "./GlobalInfo";
 import {StateItem} from "../state";
 
 export interface RootState {
-  VersionInfo: StateItem;
+  GlobalInfo: StateItem;
 }
 
 export default combineReducers<RootState>({
-  VersionInfo
+  GlobalInfo: GlobalInfo
 });

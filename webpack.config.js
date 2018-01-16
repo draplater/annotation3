@@ -16,13 +16,15 @@ module.exports = {
       'react-dom',
       'react-redux',
       'react-router',
+      'react-bootstrap',
       'redux'
     ]
   },
   output: {
     path: outPath,
-    publicPath: '/',
-    filename: 'bundle.js',
+    publicPath: process.env.NODE_ENV === "production"? './' : "/",
+    filename: '[name].[chunkhash].js',
+    chunkFilename: '[name].[chunkhash].js'
   },
   target: 'web',
   resolve: {
@@ -51,25 +53,6 @@ module.exports = {
           use: [
             {
               loader: 'css-loader',
-              query: {
-                modules: true,
-                sourceMap: !isProduction,
-                importLoaders: 1,
-                localIdentName: '[local]__[hash:base64:5]'
-              }
-            },
-            {
-              loader: 'postcss-loader',
-              options: {
-                ident: 'postcss',
-                plugins: [
-                  require('postcss-import')({ addDependencyTo: Webpack }),
-                  require('postcss-url')(),
-                  require('postcss-cssnext')(),
-                  require('postcss-reporter')(),
-                  require('postcss-browser-reporter')({ disabled: isProduction }),
-                ]
-              }
             }
           ]
         })
@@ -152,7 +135,7 @@ module.exports = {
     }),
     new Webpack.optimize.CommonsChunkPlugin({
       name: 'vendor',
-      filename: 'vendor.bundle.js',
+      filename: 'vendor.[hash].bundle.js',
       minChunks: Infinity
     }),
     new Webpack.optimize.AggressiveMergingPlugin(),
@@ -167,9 +150,16 @@ module.exports = {
   devServer: {
     contentBase: sourcePath,
     hot: true,
+    overlay: true,
     stats: {
       warnings: false
     },
+    proxy: {
+      '/api': {
+        target: 'http://127.0.0.1:9997/',
+        secure: false
+      }
+    }
   },
   node: {
     // workaround for webpack-dev-server issue

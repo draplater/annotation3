@@ -1,1 +1,1 @@
-export const SET_VERSION = "SET_VERSION";
+export const SET_USERNAME = "SET_USERNAME";

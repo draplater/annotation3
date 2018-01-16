@@ -5,13 +5,17 @@ import {bindActionCreators} from "redux";
 import {connect} from "react-redux";
 import {Route, RouteComponentProps, Router, Switch} from "react-router";
 import {RootState} from "../redux/reducers";
-import {Navbar, Nav, NavItem, Panel} from "react-bootstrap";
+import {Navbar, Nav, NavItem, Panel, Form, FormGroup, ControlLabel, FormControl, Button} from "react-bootstrap";
 import {LinkContainer} from "react-router-bootstrap";
 import {Link} from "react-router-dom";
+import {PropbankAnnotation} from "./propbank-annotation";
+import * as store from "store";
+import {SearchResult} from "./search_result";
+import {SearchBox} from "./searchbox";
 
 export namespace App {
   export interface Props extends RouteComponentProps<void> {
-    version: number;
+    username: string;
   }
 
   export interface State {
@@ -21,6 +25,12 @@ export namespace App {
 
 @connect(mapStateToProps, mapDispatchToProps)
 export class App extends React.Component<App.Props, App.State> {
+  changeUserName() {
+    const name = window.prompt("What's your name?");
+    store.set("username", name);
+    window.location.reload();
+  }
+
   render() {
     return (
       <div>
@@ -32,23 +42,34 @@ export class App extends React.Component<App.Props, App.State> {
           </Navbar.Header>
           <Nav>
             <LinkContainer exact to="/">
-                <NavItem eventKey={1}>Main</NavItem>
+              <NavItem eventKey={1}>Main</NavItem>
             </LinkContainer>
             <LinkContainer to="/about">
               <NavItem eventKey={2}>About</NavItem>
             </LinkContainer>
+          </Nav>
+          <Nav pullRight>
+            <SearchBox history={this.props.history}/>
+            <NavItem> <a onClick={this.changeUserName}>{this.props.username}</a> </NavItem>
           </Nav>
         </Navbar>
         <div className={Style.container}>
           <Router history={this.props.history}>
             <Switch>
               <Route exact path="/" render={App.renderMain}/>
-              <Route path="/about" render={App.renderAbout}/>
+              <Route
+                path="/annotate/:no"
+                component={PropbankAnnotation}
+              />
+              <Route
+                path="/search/:keyword"
+                component={SearchResult}
+              />
             </Switch>
           </Router>
         </div>
         <div className={Style.footer}>
-          <p>Version: {this.props.version}</p>
+          <p>Version: 0.1</p>
         </div>
       </div>
     );
@@ -73,7 +94,7 @@ export class App extends React.Component<App.Props, App.State> {
 
 function mapStateToProps(state: RootState) {
   return {
-    version: state.VersionInfo.version
+    username: state.GlobalInfo.username
   };
 }
 

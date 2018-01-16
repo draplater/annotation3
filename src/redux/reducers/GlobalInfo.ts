@@ -3,9 +3,9 @@ import * as Actions from "../actions";
 import {initialState, StateItem} from "../state";
 
 export default handleActions<StateItem, StateItem>({
-  [Actions.SET_VERSION]: (state, action) => {
+  [Actions.SET_USERNAME]: (state, action) => {
     return {
-      version: action.payload.version
+      username: action.payload.username
     }
   }
 }, initialState);

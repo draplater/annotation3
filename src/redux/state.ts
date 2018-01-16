@@ -1,7 +1,8 @@
 /** TodoMVC model definitions **/
+import * as store from "store";
 
 export interface StateItem {
-  version: number;
+  username: string;
 }
 
-export const initialState: StateItem = {version: 0.1};
+export const initialState: StateItem = {username: store.get("username") || "guest"};
