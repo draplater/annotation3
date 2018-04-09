@@ -10,7 +10,10 @@ export class SentenceViewer extends React.Component<SentenceViewer.Props, Senten
   }
 
   componentWillReceiveProps(new_props) {
-    this.setState(SentenceViewer.defaultState);
+    if (this.props.sentences.map(x => x.textContent).join(",") !==
+      new_props.sentences.map(x => x.textContent).join(",")) {
+      this.setState(SentenceViewer.defaultState);
+    }
   }
 
   static renderSentence(tree_literal: string) {
@@ -20,10 +23,30 @@ export class SentenceViewer extends React.Component<SentenceViewer.Props, Senten
     return <p> {raw_sentence} </p>;
   }
 
+  renderRole = (role: Element) => {
+    const argType = "ARG" + role.getAttribute("n");
+    const description = role.textContent;
+    return (
+      <div>
+        <a
+          onClick={() => {
+            this.props.onRoleSelected(argType);
+          }}
+          className={this.props.roleAnnotation === argType ? "blinking" : undefined}
+        >
+          {argType}
+        </a>
+        :{description}
+      </div>
+    );
+  };
+
   render() {
     const sentenceNode = this.props.sentences[this.state.currentSentence];
     const parse: Element = getElementsByXPath(sentenceNode.ownerDocument,
       "./example/parse", sentenceNode)[0];
+    const args: Element[] = getElementsByXPath(sentenceNode.ownerDocument,
+      "./example/arg", sentenceNode);
     const tree_literal = parse.textContent;
     return (
       <div>
@@ -39,6 +62,7 @@ export class SentenceViewer extends React.Component<SentenceViewer.Props, Senten
         />
         }
         {SentenceViewer.renderSentence(tree_literal)}
+        {args.map((x, idx) => <p key={idx}>{this.renderRole(x)}</p>)}
         <Button
           bsSize="xsmall"
           onClick={() => this.setState({showCFG: !this.state.showCFG})}
@@ -58,6 +82,8 @@ export class SentenceViewer extends React.Component<SentenceViewer.Props, Senten
 export namespace SentenceViewer {
   export interface Props {
     sentences: Element[];
+    roleAnnotation: string | null;
+    onRoleSelected: (role: string) => void;
   }
 
   export interface State {

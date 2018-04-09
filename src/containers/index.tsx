@@ -12,6 +12,7 @@ import {PropbankAnnotation} from "./propbank-annotation";
 import * as store from "store";
 import {SearchResult} from "./search_result";
 import {SearchBox} from "./searchbox";
+import {XHAnnotation} from "./xh-annotation";
 
 export namespace App {
   export interface Props extends RouteComponentProps<void> {
@@ -60,6 +61,10 @@ export class App extends React.Component<App.Props, App.State> {
               <Route
                 path="/annotate/:no"
                 component={PropbankAnnotation}
+              />
+              <Route
+                path="/xh-annotate/:no"
+                component={XHAnnotation}
               />
               <Route
                 path="/search/:keyword"

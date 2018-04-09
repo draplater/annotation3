@@ -5,3 +5,13 @@
 body {
   background: lighten(grey, 45%);
 }
+
+@keyframes blinking {
+    0%, 10%     {opacity: 0}
+    25%, 85%    {opacity: 1}
+    100%        {opacity: 0}
+}
+
+.blinking {
+    animation: blinking 1s ease infinite;
+}

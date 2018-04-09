@@ -2,6 +2,7 @@ const Webpack = require('webpack');
 const Path = require('path');
 const HtmlWebpackPlugin = require('html-webpack-plugin');
 const ExtractTextPlugin = require('extract-text-webpack-plugin');
+const errorOverlayMiddleware = require('react-error-overlay/middleware');
 
 const isProduction = process.argv.indexOf('-p') >= 0;
 const outPath = Path.join(__dirname, './dist');
@@ -22,7 +23,7 @@ module.exports = {
   },
   output: {
     path: outPath,
-    publicPath: process.env.NODE_ENV === "production"? './' : "/",
+    publicPath: process.env.NODE_ENV === "production" ? './' : "/",
     filename: '[name].[chunkhash].js',
     chunkFilename: '[name].[chunkhash].js'
   },
@@ -59,7 +60,7 @@ module.exports = {
       },
       // scoped less
       {
-	test: /\.scoped\.less$/,
+        test: /\.scoped\.less$/,
         use: [
           {
             loader: 'style-loader'
@@ -78,11 +79,11 @@ module.exports = {
             options: {
               ident: 'postcss',
               plugins: [
-                require('postcss-import')({ addDependencyTo: Webpack }),
+                require('postcss-import')({addDependencyTo: Webpack}),
                 require('postcss-url')(),
                 require('postcss-cssnext')(),
                 require('postcss-reporter')(),
-                require('postcss-browser-reporter')({ disabled: isProduction }),
+                require('postcss-browser-reporter')({disabled: isProduction}),
               ]
             }
           },
@@ -93,7 +94,7 @@ module.exports = {
       },
       // global less
       {
-	exclude: /\.scoped\.less$/,
+        exclude: /\.scoped\.less$/,
         test: /\.less$/,
         use: [
           {
@@ -108,9 +109,9 @@ module.exports = {
         ]
       },
       // static assets
-      { test: /\.html$/, use: 'html-loader' },
-      { test: /\.png$/, use: 'url-loader?limit=10000' },
-      { test: /\.jpg$/, use: 'file-loader' },
+      {test: /\.html$/, use: 'html-loader'},
+      {test: /\.png$/, use: 'url-loader?limit=10000'},
+      {test: /\.jpg$/, use: 'file-loader'},
       // default
       {
         exclude: [
@@ -149,10 +150,13 @@ module.exports = {
   ],
   devServer: {
     contentBase: sourcePath,
+    disableHostCheck: true,
     hot: true,
-    overlay: true,
     stats: {
       warnings: false
+    },
+    setup: function (app) {
+      app.use(errorOverlayMiddleware());
     },
     proxy: {
       '/api': {
